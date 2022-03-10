@@ -24,7 +24,6 @@ router.post(
 router.delete("/user/party/:id", checkToken, PartyController.deleteParty); //Rota para deletar uma festa'
 
 //rotas de festas públicas
-
 router.get("/user/parties", PartyController.getPublicAndPrivateParties); //Rota para pegar as festas públicas e privadas (se a privada for do usuário).
 router.get("/parties", PartyController.getParties); //Rota pública para pegar festas
 export default router;

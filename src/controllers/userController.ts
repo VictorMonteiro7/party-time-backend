@@ -7,6 +7,7 @@ import JWT from "jsonwebtoken";
 import validator from "validator";
 dotenv.config();
 
+//Novo Usuário
 export const newUser = async (req: Request, res: Response) => {
   let { name, email, password } = req.body;
   if (name && email && password) {
@@ -48,6 +49,7 @@ export const newUser = async (req: Request, res: Response) => {
   }
 };
 
+//Login
 export const loginUser = async (req: Request, res: Response) => {
   let { email, password } = req.body;
   if (email && password) {
@@ -74,6 +76,7 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
+//Pegar usuário
 export const getUser = async (req: Request, res: Response) => {
   const [type, token] = (req.headers.authorization as string).split(" ");
   if (type !== "Bearer")
@@ -89,6 +92,7 @@ export const getUser = async (req: Request, res: Response) => {
   }
 };
 
+//Atualizar o usuário
 export const updateUser = async (req: Request, res: Response) => {
   const [type, token] = (req.headers.authorization as string).split(" ");
   if (type !== "Bearer")

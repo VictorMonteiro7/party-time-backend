@@ -3,6 +3,7 @@ import Party from "../models/Party";
 import { getUserByToken } from "../helpers/getUserByToken";
 import User from "../models/User";
 
+//Criar uma nova festa
 export const postParty = async (req: Request, res: Response) => {
   const [type, token] = (req.headers["authorization"] as string).split(" ");
   if (type !== "Bearer")
@@ -35,6 +36,7 @@ export const postParty = async (req: Request, res: Response) => {
   }
 };
 
+//Pegar festas de acordo com o usuário logado.
 export const getUserParties = async (req: Request, res: Response) => {
   const [type, token] = (req.headers["authorization"] as string).split(" ");
   if (type !== "Bearer")
@@ -53,6 +55,7 @@ export const getUserParties = async (req: Request, res: Response) => {
   }
 };
 
+//Pegar todas as festas (rota pública)
 export const getParties = async (req: Request, res: Response) => {
   try {
     const parties = await Party.find(
@@ -70,6 +73,7 @@ export const getParties = async (req: Request, res: Response) => {
   }
 };
 
+//Pegar festa específica do usuário logado.
 export const getUserParty = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {

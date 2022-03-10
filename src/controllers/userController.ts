@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import JWT from "jsonwebtoken";
 import validator from "validator";
+import Party from "../models/Party";
+import fs from "fs";
 dotenv.config();
 
 //Novo Usuário
@@ -86,7 +88,6 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(200).json(user);
     return;
   } catch (err) {
-    console.log("ERRO ", err);
     res.status(400).json({ error: "Erro ao buscar usuário" });
     return;
   }
@@ -132,5 +133,39 @@ export const updateUser = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(400).json({ error: "Erro ao atualizar usuário" });
     return;
+  }
+};
+
+//excluir o usuário
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const [type, token] = (req.headers.authorization as string).split(" ");
+    if (type !== "Bearer")
+      return res.status(400).json({ error: "Token inválido" });
+    const user = (await getUserByToken(token, true)) as {
+      _id: string;
+      password: string;
+    };
+    const { password } = req.body;
+    const comparePassword = await bcrypt.compare(password, user.password);
+    if (!comparePassword)
+      return res.status(403).json({ error: "Acesso negado!" });
+    const sameUser = (await User.findOne({ _id: id })) as { _id: string };
+    if (sameUser._id.toString() === user._id.toString()) {
+      const userParties = await Party.find({ userId: user._id });
+      userParties.forEach((party: { [key: string]: any }) => {
+        party.photos.forEach((photo: string) => {
+          fs.unlinkSync(`./tmp/${photo}`);
+        });
+        party.delete();
+      });
+      await User.findByIdAndDelete(id);
+      return res.status(200).json({ message: "Usuário excluído com sucesso!" });
+    } else {
+      return res.status(403).json({ error: "Acesso negado!" });
+    }
+  } catch (err) {
+    return res.status(403).json({ error: "Acesso negado!" });
   }
 };

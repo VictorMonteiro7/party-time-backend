@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Party from "../models/Party";
-import { getUserById } from "../helpers/getUserById";
+import { getUserByToken } from "../helpers/getUserByToken";
 import User from "../models/User";
 
 export const postParty = async (req: Request, res: Response) => {
@@ -18,7 +18,7 @@ export const postParty = async (req: Request, res: Response) => {
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios." });
-    const user = (await getUserById(token, false)) as { _id: string };
+    const user = (await getUserByToken(token, false)) as { _id: string };
     const novaFesta = new Party({
       title,
       description,
@@ -40,7 +40,7 @@ export const getUserParties = async (req: Request, res: Response) => {
   if (type !== "Bearer")
     return res.status(403).json({ error: "Não autorizado." });
   try {
-    const conf = (await getUserById(token, false)) as { _id: string };
+    const conf = (await getUserByToken(token, false)) as { _id: string };
     const user = await User.findById({ _id: conf._id });
     if (!user) return res.status(403).json({ message: "Acesso negado!" });
     const parties = await Party.find({ userId: user._id });
@@ -76,7 +76,7 @@ export const getUserParty = async (req: Request, res: Response) => {
     const [type, token] = (req.headers["authorization"] as string).split(" ");
     if (type !== "Bearer")
       return res.status(403).json({ error: "Não autorizado." });
-    const user = (await getUserById(token, false)) as { _id: string };
+    const user = (await getUserByToken(token, false)) as { _id: string };
     const party = await Party.findById({ _id: id, userId: user._id });
     return res.status(200).json(party);
   } catch (err) {

@@ -2,7 +2,7 @@ import JWT from "jsonwebtoken";
 import User from "../models/User";
 import dotenv from "dotenv";
 dotenv.config();
-export const getUserById = async (token: string, allInfo: boolean) => {
+export const getUserByToken = async (token: string, allInfo: boolean) => {
   if (!token) return null;
   try {
     const decoded = JWT.verify(token, process.env.JWT_SECRET as string) as {

@@ -12,22 +12,19 @@ const server = express(); //inicia o express
 server.use(cors()); //habilita o cors
 server.use(express.static(path.join(__dirname, "../public"))); //habilita o diretório public com o caminho absoluto
 server.use(express.urlencoded({ extended: true })); //habilita para receber dados do Post
-mongoConnect();
-//Faz o ping teste para o endpoint /ping
-server.use("/ping", (req: Request, res: Response) => {
-  res.json({ message: "pong" });
-});
+mongoConnect(); //Conecta ao MongoDB
 
 server.use(MainRoutes); //habilita as rotas
 
-//Gerenciar o erro
+//Gerencia o erro de endpoint
 server.use((req: Request, res: Response) => {
   res.status(404);
   res.json({ error: "Endpoint não encontrado." });
 });
 
+//Gerencia o erro de multer
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  res.status(400); // Bad Request
+  res.status(400);
   if (err instanceof MulterError) {
     console.log(err.code);
     res.json({ error: "Ocorreu algum erro" });
@@ -38,5 +35,5 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 };
 server.use(errorHandler);
 
-//Escutar na porta
+//Escuta na porta
 server.listen(process.env.PORT);

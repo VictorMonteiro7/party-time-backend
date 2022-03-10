@@ -1,4 +1,4 @@
-import { getUserById } from "./../helpers/getUserById";
+import { getUserByToken } from "../helpers/getUserByToken";
 import { Request, Response } from "express";
 import User from "../models/User";
 import bcrypt from "bcrypt";
@@ -79,7 +79,7 @@ export const getUser = async (req: Request, res: Response) => {
   if (type !== "Bearer")
     return res.status(400).json({ error: "Token inválido" });
   try {
-    const user = await getUserById(token, false);
+    const user = await getUserByToken(token, false);
     res.status(200).json(user);
     return;
   } catch (err) {
@@ -94,7 +94,7 @@ export const updateUser = async (req: Request, res: Response) => {
   if (type !== "Bearer")
     return res.status(400).json({ error: "Token inválido" });
   try {
-    const user = await getUserById(token, true);
+    const user = await getUserByToken(token, true);
     if (user !== null) {
       const { name, email, password, oldPass } = req.body;
       if (!oldPass)

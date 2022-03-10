@@ -12,7 +12,7 @@ git clone https://github.com/VictorMonteiro7/party-time-backend <nome-da-pasta>
 
 Após o comando acima, entre na pasta do projeto e crie um arquivo _.env_.
 
-O projeto está feito com MongoDB, e usando variáveis ambientes. As variáveis que estáo sendo usadas são:
+O projeto está feito com MongoDB, e usando variáveis ambientes. As variáveis que estão sendo usadas são:
 
 ```
 PORT=

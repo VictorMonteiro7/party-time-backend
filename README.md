@@ -39,6 +39,8 @@ npm run start-dev
 ```
 
 Ele rodará no localhost (127.0.0.1) com a porta que foi declarada no _.env_.
-O link final ficará assim: **http://localhost:PORTA**.
+O link final ficará assim:
+
+> http://localhost:<Número-da-porta>
 
 ###### Victor Monteiro.

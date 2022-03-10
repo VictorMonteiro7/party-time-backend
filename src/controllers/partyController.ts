@@ -4,7 +4,6 @@ import Party from "../models/Party";
 import { getUserByToken } from "../helpers/getUserByToken";
 import User from "../models/User";
 import fs from "fs";
-import path from "path";
 
 //Criar uma nova festa
 export const postParty = async (req: Request, res: Response) => {

@@ -72,6 +72,8 @@ export const loginUser = async (req: Request, res: Response) => {
         }
       );
       res.status(200).json({ token, id: user._id });
+    } else {
+      res.status(400).json({ error: "Usuário não existe" });
     }
   } else {
     res.status(400).json({ error: "Insira todos os dados" });

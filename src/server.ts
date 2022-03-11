@@ -1,6 +1,5 @@
 import express, { ErrorRequestHandler, Request, Response } from "express";
 import { mongoConnect } from "./instances/mongo";
-import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
@@ -11,6 +10,7 @@ dotenv.config(); //configura o dotenv
 const server = express(); //inicia o express
 server.use(cors()); //habilita o cors
 server.use(express.static(path.join(__dirname, "../public"))); //habilita o diretório public com o caminho absoluto
+server.use(express.json()); //habilita o body-parser
 server.use(express.urlencoded({ extended: true })); //habilita para receber dados do Post
 mongoConnect(); //Conecta ao MongoDB
 

@@ -32,7 +32,8 @@ export const postParty = async (req: Request, res: Response) => {
           .resize(300, 300)
           .toFormat("webp")
           .toFile(`./public/assets/media/${fileName}`);
-        photos.push(`./public/assets/media/${fileName}`);
+        photos.push(path.join("/", fileName));
+
         unlinkSync(imagem.path);
       }
     }

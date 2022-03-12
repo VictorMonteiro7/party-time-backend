@@ -8,7 +8,15 @@ import MainRoutes from "./routes";
 
 dotenv.config(); //configura o dotenv
 const server = express(); //inicia o express
-server.use(cors()); //habilita o cors
+server.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://party-time-frontend.vercel.app",
+    ],
+  })
+); //habilita o cors
 server.use(express.static(path.join(__dirname, "../public"))); //habilita o diretório public com o caminho absoluto
 server.use(express.json()); //habilita o body-parser
 server.use(express.urlencoded({ extended: true })); //habilita para receber dados do Post

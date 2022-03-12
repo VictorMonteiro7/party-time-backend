@@ -10,11 +10,8 @@ dotenv.config(); //configura o dotenv
 const server = express(); //inicia o express
 server.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "https://party-time-frontend.vercel.app",
-    ],
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
 ); //habilita o cors
 server.use(express.static(path.join(__dirname, "../public"))); //habilita o diretório public com o caminho absoluto

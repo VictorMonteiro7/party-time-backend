@@ -27,7 +27,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   res.status(400);
   if (err instanceof MulterError) {
     console.log(err.code);
-    res.json({ error: "Ocorreu algum erro" });
+    res.json({ error: err.code });
   } else {
     console.log(err);
     res.json({ error: "Ocorreu algum erro." });

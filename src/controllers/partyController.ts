@@ -1,9 +1,11 @@
+import sharp from "sharp";
 import bcrypt, { compare } from "bcrypt";
 import { Request, Response } from "express";
 import Party from "../models/Party";
 import { getUserByToken } from "../helpers/getUserByToken";
 import User from "../models/User";
-import fs from "fs";
+import fs, { unlinkSync } from "fs";
+import path from "path";
 
 //Criar uma nova festa
 export const postParty = async (req: Request, res: Response) => {
@@ -13,15 +15,27 @@ export const postParty = async (req: Request, res: Response) => {
   try {
     let photos: string[] = [];
     let files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    files.photos.forEach((photo) => {
-      photos.push(photo.filename);
-    });
     const { title, description, date, privacy } = req.body;
     if (!title || !description || !date)
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios." });
     const user = (await getUserByToken(token, false)) as { _id: string };
+    if (user === null)
+      return res.status(400).json({ error: "Usuário não encontrado." });
+    // const imagens = await sharp(req.files.path)
+    if (req.files) {
+      for (let imagem of files.photos) {
+        const reqFoto = sharp(imagem.path);
+        const fileName = `${imagem.filename}.webp`;
+        await reqFoto
+          .resize(300, 300)
+          .toFormat("webp")
+          .toFile(`./public/assets/media/${fileName}`);
+        photos.push(fileName);
+        unlinkSync(imagem.path);
+      }
+    }
     const novaFesta = new Party({
       title,
       description,
@@ -142,5 +156,24 @@ export const deleteParty = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Festa deletada com sucesso!" });
   } catch (err) {
     return res.status(403).json({ error: "Acesso negado." });
+  }
+};
+
+export const uploadFile = async (req: Request, res: Response) => {
+  if (req.file) {
+    let image = sharp(req.file.path);
+    const fileName = `${req.file.filename}.webp`;
+    await image
+      .resize(300, 300, {
+        fit: "cover",
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      })
+      .webp()
+      .toFile(`./public/assets/media/${fileName}`);
+    unlinkSync(req.file.path);
+    return fileName;
+    // res.json({ image: `${fileName}` });
+  } else {
+    return res.status(404).json({ error: "Envie um arquivo válido." });
   }
 };

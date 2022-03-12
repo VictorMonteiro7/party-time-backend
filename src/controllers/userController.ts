@@ -156,18 +156,20 @@ export const deleteUser = async (req: Request, res: Response) => {
     const sameUser = (await User.findOne({ _id: id })) as { _id: string };
     if (sameUser._id.toString() === user._id.toString()) {
       const userParties = await Party.find({ userId: user._id });
-      userParties.forEach((party: { [key: string]: any }) => {
-        party.photos.forEach((photo: string) => {
-          fs.unlinkSync(`./tmp/${photo}`);
+      if (userParties.length > 0) {
+        userParties.forEach((party: { [key: string]: any }) => {
+          party.photos.forEach((photo: string) => {
+            fs.unlinkSync(`./tmp/${photo}`);
+          });
+          party.delete();
         });
-        party.delete();
-      });
+      }
       await User.findByIdAndDelete(id);
       return res.status(200).json({ message: "Usuário excluído com sucesso!" });
     } else {
       return res.status(403).json({ error: "Acesso negado!" });
     }
   } catch (err) {
-    return res.status(403).json({ error: "Acesso negado!" });
+    return res.status(403).json({ error: "Aqui!" });
   }
 };

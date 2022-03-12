@@ -40,7 +40,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 };
 server.use(errorHandler);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 //Escuta na porta
 server.listen(PORT, () => {
   console.log(`ESCUTANDO NA PORTA ${PORT}`);

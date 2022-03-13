@@ -1,3 +1,4 @@
+import cloudinary from "cloudinary";
 import { getUserByToken } from "../helpers/getUserByToken";
 import { Request, Response } from "express";
 import User from "../models/User";
@@ -8,6 +9,13 @@ import validator from "validator";
 import Party from "../models/Party";
 import fs from "fs";
 dotenv.config();
+
+const config = cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+const cloudImg = cloudinary.v2;
 
 //Novo Usuário
 export const newUser = async (req: Request, res: Response) => {
@@ -159,7 +167,22 @@ export const deleteUser = async (req: Request, res: Response) => {
       if (userParties.length > 0) {
         userParties.forEach((party: { [key: string]: any }) => {
           party.photos.forEach((photo: string) => {
-            fs.unlinkSync(`./tmp/${photo}`);
+            let nomeFoto = photo
+              .split(`${user._id}/`)[1]
+              .split("%20")
+              .join(" ")
+              .split(`${party.title}/`)[1]
+              .split(".webp")[0];
+            cloudImg.uploader.destroy(
+              `users/${user._id}/${party.title}/${nomeFoto}`,
+              (err, result) => {
+                if (err)
+                  return res
+                    .status(400)
+                    .json({ error: "Erro ao deletar imagem!" });
+                if (result) console.log(result);
+              }
+            );
           });
           party.delete();
         });

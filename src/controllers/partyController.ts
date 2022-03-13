@@ -48,6 +48,7 @@ export const postParty = async (req: Request, res: Response) => {
     await novaFesta.save();
     return res.status(200).json({ message: "Festa criada com sucesso!" });
   } catch (err) {
+    console.log(err);
     res.status(400).json({ error: "Erro ao criar a festa" });
     return;
   }

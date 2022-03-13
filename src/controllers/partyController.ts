@@ -5,8 +5,16 @@ import Party from "../models/Party";
 import { getUserByToken } from "../helpers/getUserByToken";
 import User from "../models/User";
 import fs, { unlinkSync } from "fs";
-import path from "path";
+import cloudinary from "cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
 
+const config = cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+const cloudImg = cloudinary.v2;
 //Criar uma nova festa
 export const postParty = async (req: Request, res: Response) => {
   const [type, token] = (req.headers["authorization"] as string).split(" ");
@@ -26,14 +34,28 @@ export const postParty = async (req: Request, res: Response) => {
     // const imagens = await sharp(req.files.path)
     if (req.files) {
       for (let imagem of files.photos) {
-        const reqFoto = sharp(imagem.path);
         const fileName = `${imagem.filename}.webp`;
-        await reqFoto
-          .resize(300, 300)
-          .toFormat("webp")
-          .toFile(`./public/assets/media/${fileName}`);
-        photos.push(`https://api.ovictormonteiro.com/assets/media/${fileName}`);
-
+        await cloudImg.uploader.upload(
+          imagem.path,
+          {
+            eager: {
+              width: 300,
+              height: 300,
+              crop: "fill",
+            },
+            type: "upload",
+            resource_type: "image",
+            format: "webp",
+            folder: `users/${user._id}/${title}`,
+            public_id: imagem.filename,
+          },
+          (err, result) => {
+            if (err)
+              return res.status(400).json({ error: "Erro ao enviar imagem" });
+            if (result) photos.push(result.eager[0].secure_url);
+          }
+        );
+        //https://res.cloudinary.com/dzo5w6jru/image/upload/v1647198005/user/husky_ouw4ke.jpg
         unlinkSync(imagem.path);
       }
     }
@@ -151,7 +173,20 @@ export const deleteParty = async (req: Request, res: Response) => {
       return res.status(403).json({ error: "Acesso negado!" });
     if (party.photos) {
       party.photos.forEach((photo) => {
-        fs.unlinkSync(`./tmp/${photo}`);
+        let nomeFoto = photo
+          .split(`${user._id}/`)[1]
+          .split("%20")
+          .join(" ")
+          .split(`${party.title}/`)[1]
+          .split(".webp")[0];
+        cloudImg.uploader.destroy(
+          `users/${user._id}/${party.title}/${nomeFoto}`,
+          (err, result) => {
+            if (err)
+              return res.status(400).json({ error: "Erro ao deletar imagem!" });
+            if (result) console.log(result);
+          }
+        );
       });
     }
     await party.delete();

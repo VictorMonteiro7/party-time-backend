@@ -32,7 +32,7 @@ export const postParty = async (req: Request, res: Response) => {
           .resize(300, 300)
           .toFormat("webp")
           .toFile(`./public/assets/media/${fileName}`);
-        photos.push(`./public/assets/media/${fileName}`);
+        photos.push(`https://api.ovictormonteiro.com/assets/media/${fileName}`);
 
         unlinkSync(imagem.path);
       }
